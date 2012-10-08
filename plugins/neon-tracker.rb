@@ -18,7 +18,7 @@ if ENV['TIMELOG']
           user_auth_pass:  pass
         }
 
-        uri = URI('http://neon-tracker.herokuapp.com/api/tracktime')
+        uri = URI('http://nr-tt.herokuapp.com/api/tracktime')
         res = Net::HTTP.post_form(uri, postdata )
       end
 
@@ -40,28 +40,26 @@ if ENV['TIMELOG']
       while errors do
         res = timer.post_time(user, pass, options)
 
-        p res
-        p res.body
-        p res.body.to_json
-        p res.body.to_json[0]
-        if res.body[:response] == "success"
-          puts res.body[:message].color(:green)
-          errors = false
-        else
-          errors = true
-          puts res.body[:message].color(:red)
+        errors = false
 
-          case res.body[:error_type]
-          when "invalid_project"
-            puts "Choose one of this projects"
-            puts res.body[:options]
-            project = STDIN.gets.chomp
-            options[:project] = project
+       if res.body[:response] == "success"
+         puts res.body[:message].color(:green)
+         errors = false
+       else
+         errors = true
+         puts res.body[:message].color(:red)
 
-          when "invalid_user"
-            puts "Invalid username or password, try again"
-          end
-        end
+         case res.body[:error_type]
+         when "invalid_project"
+           puts "Choose one of this projects"
+           puts res.body[:options]
+           project = STDIN.gets.chomp
+           options[:project] = project
+
+         when "invalid_user"
+           puts "Invalid username or password, try again"
+         end
+       end
       end
 
     end
